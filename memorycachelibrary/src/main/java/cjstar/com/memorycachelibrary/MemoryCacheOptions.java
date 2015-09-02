@@ -1,7 +1,9 @@
 package cjstar.com.memorycachelibrary;
 
+import cjstar.com.memorycachelibrary.cache.BitmapMemoryCache;
+
 /**
- * The {@link cjstar.com.memorycachelibrary.cache.BitmapMemmoryCache} will be config by this options.
+ * The {@link BitmapMemoryCache} will be config by this options.
  * Created by xuchun on 15/9/2.
  */
 public class MemoryCacheOptions {

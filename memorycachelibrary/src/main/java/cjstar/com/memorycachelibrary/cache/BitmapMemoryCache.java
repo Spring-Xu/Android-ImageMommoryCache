@@ -3,6 +3,7 @@ package cjstar.com.memorycachelibrary.cache;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.ref.SoftReference;
 import java.util.LinkedHashMap;
@@ -13,7 +14,9 @@ import cjstar.com.memorycachelibrary.MemoryCacheOptions;
 /**
  * Created by CJstar on 15/9/2.
  */
-public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
+public class BitmapMemoryCache extends MemmoryCache<Bitmap> {
+
+    private static final String TAG = "BitmapMemoryCache";
 
     private MemoryCacheOptions options;
 
@@ -21,11 +24,24 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
 
     private LinkedHashMap<String, SoftReference<Bitmap>> mSoftCache;
 
+    private static BitmapMemoryCache instance;
+
+    public static BitmapMemoryCache getInstance(){
+        if(instance==null){
+            synchronized (BitmapMemoryCache.class){
+                if(instance==null){
+                    instance = new BitmapMemoryCache();
+                }
+            }
+        }
+
+        return instance;
+    }
 
     /**
      * Create a instance by default config
      */
-    public BitmapMemmoryCache() {
+    private BitmapMemoryCache() {
         options = new MemoryCacheOptions.Builder()
                 .setmMaxCacheCount(MemoryCacheDefaultOptions.mMaxCacheCount)
                 .setmMaxCacheSize(MemoryCacheDefaultOptions.mMaxCacheSize)
@@ -39,7 +55,7 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
      *
      * @param cacheOptions not null, if it is null {@link NullPointerException} will be throw
      */
-    public BitmapMemmoryCache(MemoryCacheOptions cacheOptions) {
+    public BitmapMemoryCache(MemoryCacheOptions cacheOptions) {
         this.options = cacheOptions;
         initializeCache();
     }
@@ -48,17 +64,18 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
     private void initializeCache() {
 
         if (options == null) {
-            throw new NullPointerException("BitmapMemmoryCache#options is null");
+            throw new NullPointerException("BitmapMemoryCache#options is null");
         }
 
         if (options.getmMaxCacheSize() == 0) {
-            throw new IllegalArgumentException("BitmapMemmoryCache#max cache size is o");
+            throw new IllegalArgumentException("BitmapMemoryCache#max cache size is o");
         }
 
         if (options.getmMaxCacheCount() == 0) {
-            throw new IllegalArgumentException("BitmapMemmoryCache#max cache count is o");
+            throw new IllegalArgumentException("BitmapMemoryCache#max cache count is o");
         }
 
+        Log.d(TAG,"maxSize:"+options.getmMaxCacheSize()+" maxCount:"+options.getmMaxCacheCount());
         mMemoryCache = new LruCache<String, Bitmap>(options.getmMaxCacheSize()) {
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
@@ -74,6 +91,7 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
                 if (oldValue != null) {
                     // the allocation is full, move bitmap to soft reference
                     mSoftCache.put(key, new SoftReference<Bitmap>(oldValue));
+                    Log.e(TAG, "entryRemoved to mSoftCache:"+key);
                 }
 
             }
@@ -87,8 +105,11 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
             protected boolean removeEldestEntry(
                     Entry<String, SoftReference<Bitmap>> eldest) {
                 if (size() > options.getmMaxCacheCount()) {
+                    Log.e(TAG, "removeEldestEntry true");
                     return true;
                 }
+
+                Log.e(TAG, "removeEldestEntry full");
                 return false;
             }
         };
@@ -96,6 +117,8 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
 
     @Override
     public Bitmap get(String key) {
+        Log.e(TAG, "get:"+key);
+
         if (TextUtils.isEmpty(key)) {
             return null;
         }
@@ -110,6 +133,8 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
                 // LRU : refresh this bitmap position
                 mMemoryCache.remove(key);
                 mMemoryCache.put(key, bitmap);
+                Log.e(TAG, "get mMemoryCache");
+
                 return bitmap;
             }
 
@@ -125,6 +150,8 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
                     // move bitmap to mSoftCache
                     mMemoryCache.put(key, bitmap);
                     mSoftCache.remove(key);
+                    Log.e(TAG, "get mSoftCache");
+
                     return bitmap;
 
                 } else {
@@ -193,11 +220,12 @@ public class BitmapMemmoryCache extends MemmoryCache<Bitmap> {
     }
 
     @Override
-    public void put(Bitmap bitmap, String key) {
+    public void put(String key,Bitmap bitmap) {
         if (bitmap == null || bitmap.isRecycled()) {
             return;
         }
 
+        Log.e(TAG, "put:"+key);
         // thread synchronize
         synchronized (mMemoryCache) {
             mMemoryCache.put(key, bitmap);

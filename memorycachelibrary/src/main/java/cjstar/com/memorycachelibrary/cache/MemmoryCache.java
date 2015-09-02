@@ -18,7 +18,7 @@ public abstract class MemmoryCache<T> {
      * @param t
      * @param key
      */
-    public abstract  void put(T t, String key);
+    public abstract  void put(String key,T t);
 
     /**
      * Remove a cached object from cache, and the {@link NullPointerException} will be throw if key is null.

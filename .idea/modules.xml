@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ImageMommoryCache.iml" filepath="$PROJECT_DIR$/ImageMommoryCache.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imagefilecache/imagefilecache.iml" filepath="$PROJECT_DIR$/imagefilecache/imagefilecache.iml" />
       <module fileurl="file://$PROJECT_DIR$/memorycachelibrary/memorycachelibrary.iml" filepath="$PROJECT_DIR$/memorycachelibrary/memorycachelibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/threadpoollibrary/threadpoollibrary.iml" filepath="$PROJECT_DIR$/threadpoollibrary/threadpoollibrary.iml" />
     </modules>
   </component>
 </project>

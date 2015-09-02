@@ -1,1 +1,1 @@
-include ':app', ':memorycachelibrary'
+include ':app', ':memorycachelibrary', ':imagefilecache', ':threadpoollibrary'

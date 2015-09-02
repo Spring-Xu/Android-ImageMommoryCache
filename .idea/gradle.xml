@@ -11,7 +11,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/imagefilecache" />
             <option value="$PROJECT_DIR$/memorycachelibrary" />
+            <option value="$PROJECT_DIR$/threadpoollibrary" />
           </set>
         </option>
       </GradleProjectSettings>
